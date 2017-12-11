@@ -19,7 +19,7 @@ import common
 #vars
 gameLayer = None
 gameScene = None
-spriteBird = None
+# spriteBird = None
 land_1 = None
 land_2 = None
 startLayer = None
@@ -33,7 +33,7 @@ errorLabel = None
 isGamseStart = False
 
 def initGameLayer():
-    global spriteBird, gameLayer, land_1, land_2
+    global gameLayer, land_1, land_2
     # gameLayer: 游戏场景所在的layer
     gameLayer = Layer()
     # add background
@@ -267,6 +267,9 @@ class RestartMenu(Menu):
     def initMainMenu(self):
         gameScene.remove(gameLayer)
         initGameLayer()
+        global spriteBird
+        spriteBird = creatBird()
+        gameLayer.add(spriteBird, z=20)
         isGamseStart = False
         singleGameReady()
 
