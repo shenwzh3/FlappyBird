@@ -31,6 +31,8 @@ listener = None
 ipTextField = None
 errorLabel = None
 isGamseStart = False
+diffBuf = ["easy","medium","hard"]
+difficulty = 0
 
 def initGameLayer():
     global gameLayer, land_1, land_2
@@ -146,6 +148,7 @@ def removeContent():
     except Exception, e:
         pass
 
+
 # 输入密码框类 modified by Joe at 2017.12.11
 class EntryPwdMenuItem(MenuItem):
 
@@ -250,7 +253,8 @@ def checkAccount():
         spriteBird = creatBird()
         gameLayer.add(spriteBird, z=20)
         start_botton = SingleGameStartMenu()
-        gameLayer.add(start_botton, z=20, name="start_button")        
+        gameLayer.add(start_botton, z=20, name="start_button")      
+
 
 
 class RestartMenu(Menu):
@@ -260,7 +264,7 @@ class RestartMenu(Menu):
         self.menu_halign = CENTER
         items = [
                 (ImageMenuItem(common.load_image("button_restart.png"), self.initMainMenu)),
-                (ImageMenuItem(common.load_image("button_notice.png"), showNotice))
+                (ImageMenuItem(common.load_image("button_score.png"), showScore))
                 ]  
         self.create_menu(items,selected_effect=zoom_in(),unselected_effect=zoom_out())
 
@@ -270,23 +274,47 @@ class RestartMenu(Menu):
         global spriteBird
         spriteBird = creatBird()
         gameLayer.add(spriteBird, z=20)
+        start_botton = SingleGameStartMenu()
+        gameLayer.add(start_botton, z=20, name="start_button") 
         isGamseStart = False
-        singleGameReady()
+        # singleGameReady()
+
+def showScore():
+    pass
+
+
 
 class SingleGameStartMenu(Menu):
     def __init__(self):  
         super(SingleGameStartMenu, self).__init__()
         self.menu_valign = CENTER
         self.menu_halign = CENTER
+        # 舍弃原有的start按钮，直接从选择难度进入游戏 modified by Joe at 2017.12.11
         items = [
-                (ImageMenuItem(common.load_image("button_start.png"), self.gameStart)),
-                (ImageMenuItem(common.load_image("button_notice.png"), showNotice))
+                (ImageMenuItem(common.load_image("button_easy.png"), self.gameStartEasy)),
+                (ImageMenuItem(common.load_image("button_medium.png"), self.gameStartMedium)),
+                (ImageMenuItem(common.load_image("button_hard.png"), self.gameStartHard)),
+                # (MultipleMenuItem('difficulty',on_diff_choose(),diffBuf,0))
                 ]  
         self.create_menu(items,selected_effect=zoom_in(),unselected_effect=zoom_out())
 
-    def gameStart(self):
+    def gameStartEasy(self):
         gameLayer.remove("start_button")
+        difficulty = 0
+        # gameLayer.remove("diff_menu")
+        singleGameReady()
+
+    def gameStartMedium(self):
+        gameLayer.remove("start_button")
+        difficulty = 1
+        # gameLayer.remove("diff_menu")
         singleGameReady() 
+
+    def gameStartHard(self):
+        gameLayer.remove("start_button")
+        difficulty = 2
+        # gameLayer.remove("diff_menu")
+        singleGameReady()  
 
 
 #注册、登陆菜单  modified by Joe at 2017/12/10
@@ -311,3 +339,5 @@ class SingleGameSignMenu(Menu):
 
     def signUp(self): #注册
             pass    
+
+
