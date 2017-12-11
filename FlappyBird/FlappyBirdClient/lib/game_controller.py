@@ -6,6 +6,7 @@ from cocos.layer import *
 from cocos.text  import *
 from cocos.menu import *
 import random
+from pyglet.window import key
 from atlas import *
 from land import *
 from bird import *
@@ -25,8 +26,8 @@ startLayer = None
 pipes = None
 score = 0
 listener = None
-account = None
-password = None
+# account = None
+# password = None
 ipTextField = None
 errorLabel = None
 isGamseStart = False
@@ -39,9 +40,6 @@ def initGameLayer():
     bg = createAtlasSprite("bg_day")
     bg.position = (common.visibleSize["width"]/2, common.visibleSize["height"]/2)
     gameLayer.add(bg, z=0)
-    # add moving bird
-    spriteBird = creatBird()
-    gameLayer.add(spriteBird, z=20)
     # add moving land
     land_1, land_2 = createLand()
     gameLayer.add(land_1, z=10)
@@ -54,9 +52,13 @@ def game_start(_gameScene):
     # 给gameScene赋值
     gameScene = _gameScene
     initGameLayer()
-    start_botton = SingleGameStartMenu()
-    gameLayer.add(start_botton, z=20, name="start_button")
-    connect(gameScene)
+    sign_botton = SingleGameSignMenu()
+    gameLayer.add(sign_botton, z=20, name="sign_button")
+    # start_botton = SingleGameStartMenu()
+    # gameLayer.add(start_botton, z=20, name="start_button")
+
+    # 向服务器端请求连接
+    connect(gameScene) 
 
 def createLabel(value, x, y):
     label=Label(value,  
@@ -143,7 +145,113 @@ def removeContent():
         gameLayer.remove("content")
     except Exception, e:
         pass
-    
+
+# 输入密码框类 modified by Joe at 2017.12.11
+class EntryPwdMenuItem(MenuItem):
+
+    value = property(lambda self: u''.join(self._value),
+                     lambda self, v: setattr(self, '_value', list(v)))
+
+    def __init__(self, label, callback_func, value, max_length=0):
+        self._value = list(value)
+        self._label = label
+        super(EntryPwdMenuItem, self).__init__("%s %s" % (label, value), callback_func)
+        self.max_length = max_length
+        # 修改字体大小
+
+    def on_text(self, text):
+        if self.max_length == 0 or len(self._value) < self.max_length:
+            self._value.append(text)
+            self._calculate_value()
+        return True
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == key.BACKSPACE:
+            try:
+                self._value.pop()
+            except IndexError:
+                pass
+            self._calculate_value()
+            return True
+
+    def _calculate_value(self):
+        self.callback_func(self.value)
+        new_text = u"%s %s" % (self._label, '*' * len(self.value))
+        self.item.text = new_text
+        self.item_selected.text = new_text
+
+
+ # 登陆输入框类 modified by Joe at 2017.12.11
+class SigninMenu(Menu):
+     """docstring for SigninMenu"""
+     def __init__(self):
+
+        super(SigninMenu, self).__init__()
+
+        self.font_title = {
+            'text': 'title',
+            'font_name': 'Arial',
+            'font_size': 32,
+            'color': (192, 192, 192, 255),
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'dpi': 96,
+            'x': 0, 'y': 0,
+        }
+
+        self.font_item = {
+            'font_name': 'Arial',
+            'font_size': 16,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+        self.font_item_selected = {
+            'font_name': 'Arial',
+            'font_size': 20,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+
+        self.menu_valign = CENTER  
+        self.menu_halign = CENTER
+        items = [
+                (EntryMenuItem("Username:",getUsername,"")),
+                (EntryPwdMenuItem("Password:",getPassword,"")),
+                (ImageMenuItem(common.load_image("button_ok.png"), checkAccount))
+                ]
+        self.create_menu(items)
+
+def getUsername(value):
+    global userName
+    userName = value
+
+def getPassword(value):
+    global password
+    password = value
+
+def checkAccount():
+    if userName != "shenwzh" and password != "123456":
+        showContent("Username or password incorrect!")
+    else:
+        gameLayer.remove("signIn_menu")
+        # add moving bird
+        removeContent()
+        global spriteBird
+        spriteBird = creatBird()
+        gameLayer.add(spriteBird, z=20)
+        start_botton = SingleGameStartMenu()
+        gameLayer.add(start_botton, z=20, name="start_button")        
+
 
 class RestartMenu(Menu):
     def __init__(self):  
@@ -176,3 +284,27 @@ class SingleGameStartMenu(Menu):
     def gameStart(self):
         gameLayer.remove("start_button")
         singleGameReady() 
+
+
+#注册、登陆菜单  modified by Joe at 2017/12/10
+class SingleGameSignMenu(Menu):
+    """docstring for SingleGameSignMenu"""
+    def __init__(self):
+        super(SingleGameSignMenu, self).__init__()
+        self.menu_valign = CENTER
+        self.menu_halign = CENTER
+        items = [
+                (ImageMenuItem(common.load_image("button_SignUp.png"), self.signUp)),
+                (ImageMenuItem(common.load_image("button_SignIn.png"), self.signIn))
+                ]  
+        self.create_menu(items,selected_effect=zoom_in(),unselected_effect=zoom_out())
+    
+    def signIn(self): #登陆
+        gameLayer.remove("sign_button")
+        # start_botton = SingleGameStartMenu()
+        # gameLayer.add(start_botton, z=20, name="start_button")
+        signIn_menu = SigninMenu()
+        gameLayer.add(signIn_menu,z=20, name = "signIn_menu")
+
+    def signUp(self): #注册
+            pass    
