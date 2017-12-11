@@ -10,6 +10,8 @@ from game_controller import *
 import common
 
 # take over to add the difficulty feature:easy medium hard
+# take over to add the difficulty feature:easy medium hard
+
 # constants
 pipeCount = 2
 pipeHeight = 320
