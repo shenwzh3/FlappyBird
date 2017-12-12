@@ -12,7 +12,7 @@ def connect(gameScene):
         return connected
     #connect server
     host = "127.0.0.1"
-    port = 9234
+    port = 9236
     sock = socket.socket()
     try: 
     	sock.connect((host, port))
@@ -39,6 +39,14 @@ def connect(gameScene):
             import game_controller
             game_controller.showContent(data['notice_content']) #showContent is from game_controller
 
+        if 'authenResult' in data:
+            import game_controller
+            if data['authenResult']==False:
+                showContent("Username or password incorrect!")
+            else:
+                game_controller.authenticationSucceed()
+            
+
     gameScene.schedule(receiveServer)
     return connected
 
@@ -52,3 +60,9 @@ def request_notice():
     send_data = get_send_data()
     send_data['notice'] = 'request notice'
     netstream.send(sock, send_data)
+
+def signIn_Authen(signInInformation):
+    send_data = get_send_data()
+    send_data['signInAuthentication'] = signInInformation
+    netstream.send(sock, send_data)
+

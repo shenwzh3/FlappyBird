@@ -33,6 +33,8 @@ errorLabel = None
 isGamseStart = False
 diffBuf = ["easy","medium","hard"]
 difficulty = 0
+userName = ''
+password = ''
 
 def initGameLayer():
     global gameLayer, land_1, land_2
@@ -243,17 +245,19 @@ def getPassword(value):
     password = value
 
 def checkAccount():
-    # if userName != "shenwzh" and password != "123456":
+    signIn_Authen({'userName':userName,'password':password})
+    # if check== False:
     #     showContent("Username or password incorrect!")
-    # else:
-        gameLayer.remove("signIn_menu")
-        # add moving bird
-        removeContent()
-        global spriteBird
-        spriteBird = creatBird()
-        gameLayer.add(spriteBird, z=20)
-        start_botton = SingleGameStartMenu()
-        gameLayer.add(start_botton, z=20, name="start_button")      
+                 
+def authenticationSucceed():
+    gameLayer.remove("signIn_menu")
+    # add moving bird
+    removeContent()
+    global spriteBird
+    spriteBird = creatBird()
+    gameLayer.add(spriteBird, z=20)
+    start_botton = SingleGameStartMenu()  
+    gameLayer.add(start_botton, z=20, name="start_button")
 
 
 
