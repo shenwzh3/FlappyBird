@@ -8,15 +8,15 @@ sid = 0
 
 
 
-
+# a little bug here
 def checkAuthentication(signInInformation):
-	with open('signinlist.json',encoding='utf-8') as json_file:
-		data = json.loads(json_file)
-    	userInfoList = data['userInfo']
-    	print userInfoList
+	json_file = open('signinlist.json')
+	data = json.load(json_file)
+   	userInfoList = data['userInfo']
+   	print userInfoList
     # signInInformation = {'userName':userName,'password':password]}
 	for i in range(len(userInfoList)):
-		if signInInformation['userName'] in userInfoList[i] and signInInformation['password'] in userInfoList[i]:
+		if signInInformation['userName'] in userInfoList[i]['userName'] and signInInformation['password'] in userInfoList[i]['password']:
 			return True
 	return False
 
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 	s = socket.socket()
 
 	host = HOST
-	port = 9236
+	port = 9237
 
 	s.bind((host, port))
 	s.listen(4)
