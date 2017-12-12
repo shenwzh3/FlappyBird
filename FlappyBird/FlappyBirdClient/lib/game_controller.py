@@ -243,9 +243,9 @@ def getPassword(value):
     password = value
 
 def checkAccount():
-    # if userName != "shenwzh" and password != "123456":
-    #     showContent("Username or password incorrect!")
-    # else:
+    if userName != "shenwzh" and password != "123456":
+        showContent("Username or password incorrect!")
+    else:
         gameLayer.remove("signIn_menu")
         # add moving bird
         removeContent()

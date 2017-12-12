@@ -25,7 +25,7 @@ def addCollision(gameScene, gameLayer, spriteBird, pipes, land_1, land_2,difficu
     upPipeY = getUpPipeYPosition()
     upPipeCollided = False
     isCollided = False
-    pipeDistance = 140 - difficulty * 25
+    pipeDistance = 130 - difficulty * 20
 
     #初始化碰撞管理器
     collision_manager = CollisionManagerBruteForce()
@@ -36,8 +36,14 @@ def addCollision(gameScene, gameLayer, spriteBird, pipes, land_1, land_2,difficu
         collision_manager.add(pipes[i].get("downPipe"))
         collision_manager.add(pipes[i].get("upPipe"))
 
+    # 增加轮询添加刚体的方法  modified by Joe at 2017.12.12
     def collisionHandler(dt):
         global isCollided, upPipeCollided, collision_func
+        # 添加判断，以判断是否有水管跑过去了
+        if not (collision_manager.knows(pipes[0].get("downPipe")) and collision_manager.knows(pipes[1].get("downPipe"))):
+            for i in range(0, pipeCount):
+                collision_manager.add(pipes[i].get("downPipe"))
+                collision_manager.add(pipes[i].get("upPipe"))
         spriteBird.cshape.center = Vector2(spriteBird.position[0], spriteBird.position[1])
         for i in range(0, pipeCount):
             pipes[i].get("downPipe").cshape.center = Vector2(pipes[i].position[0], pipes[i].position[1]+(atlas["pipe_up"]["height"] + pipeDistance)) 

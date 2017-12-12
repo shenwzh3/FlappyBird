@@ -36,7 +36,9 @@ class ActorModel(object):
 
 def createPipes(layer, gameScene, spriteBird, score, difficulty):
     global g_score, movePipeFunc, calScoreFunc
-    pipeDistance = 140 - difficulty * 25
+    pipeDistance = 130 - difficulty * 20
+    # 一开始先生成两个pipe，然后移动的过程中，pipe[1]不断替换pipe[0]，
+    # 并生成新的pipe[1]    modified by Joe at 2017.12.12
     def initPipe():
         for i in range(0, pipeCount):
             #把downPipe和upPipe组合为singlePipe
@@ -47,6 +49,8 @@ def createPipes(layer, gameScene, spriteBird, score, difficulty):
             singlePipe.add(upPipe, name="upPipe")
             
             #设置管道高度和位置
+            # print 'ok\n'
+            heightOffset = random.randint(-60,80)
             singlePipe.position=(common.visibleSize["width"] + i*pipeInterval + waitDistance, heightOffset)
             layer.add(singlePipe, z=10)
             pipes[i] = singlePipe
@@ -54,19 +58,35 @@ def createPipes(layer, gameScene, spriteBird, score, difficulty):
             upPipeYPosition[i] = heightOffset + pipeHeight/2
             downPipeYPosition[i] = heightOffset + pipeHeight/2 + pipeDistance
 
+    # 每当一个管道移除界面，就重新创建一个管道 modified by Joe at 2017.12.12
     def movePipe(dt):
         moveDistance = common.visibleSize["width"]/(2*60)   # 移动速度和land一致
-        for i in range(0, pipeCount):
-            pipes[i].position = (pipes[i].position[0]-moveDistance, pipes[i].position[1])
-            if pipes[i].position[0] < -pipeWidth/2:
-                pipeNode = pipes[i]
-                pipeState[i] = PIPE_NEW
-                next = i - 1
-                if next < 0: next = pipeCount - 1
-                pipeNode.position = (pipes[next].position[0] + pipeInterval, heightOffset)
-                upPipeYPosition[i] = heightOffset + pipeHeight/2
-                downPipeYPosition[i] = heightOffset + pipeHeight/2 + pipeDistance
-                break
+        pipes[0].position = (pipes[0].position[0]-moveDistance, pipes[0].position[1])
+        pipes[1].position = (pipes[1].position[0]-moveDistance, pipes[1].position[1])
+        if pipes[0].position[0] < -pipeWidth:
+            pipeDel = pipes[0]
+            pipes[0] = pipes[1]
+            pipeState[0] = pipeState[1]
+            upPipeYPosition[0] = upPipeYPosition[1]
+            downPipeYPosition[0] = downPipeYPosition[1]
+            layer.remove(pipeDel)
+            # 开始新建管道
+            downPipe = CollidableRectSprite("pipe_down", 0, (pipeHeight + pipeDistance), pipeWidth/2, pipeHeight/2) #朝下的pipe而非在下方的pipe
+            upPipe = CollidableRectSprite("pipe_up", 0, 0, pipeWidth/2, pipeHeight/2)  #朝上的pipe而非在上方的pipe
+            singlePipe = CocosNode()
+            singlePipe.add(downPipe, name="downPipe")
+            singlePipe.add(upPipe, name="upPipe")
+            
+            #设置管道高度和位置
+            # print 'ok\n'
+            heightOffset = random.randint(-80,80)
+            singlePipe.position=(pipes[0].position[0] + pipeInterval, heightOffset)
+            layer.add(singlePipe, z=10)
+            pipes[1] = singlePipe
+            pipeState[1] = PIPE_NEW
+            upPipeYPosition[1] = heightOffset + pipeHeight/2
+            downPipeYPosition[1] = heightOffset + pipeHeight/2 + pipeDistance
+
 
     def calScore(dt):
         global g_score
