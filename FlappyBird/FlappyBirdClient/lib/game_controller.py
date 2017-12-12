@@ -110,13 +110,13 @@ def singleGameReady():
             addTouchHandler(gameScene, isGamseStart, spriteBird)
             score = 0   #分数，飞过一个管子得到一分
             # add moving pipes
-            pipes = createPipes(gameLayer, gameScene, spriteBird, score)
+            pipes = createPipes(gameLayer, gameScene, spriteBird, score, difficulty)
             # 小鸟AI初始化
             # initAI(gameLayer)
             # add score
             createScoreLayer(gameLayer)
             # add collision detect
-            addCollision(gameScene, gameLayer, spriteBird, pipes, land_1, land_2)
+            addCollision(gameScene, gameLayer, spriteBird, pipes, land_1, land_2, difficulty)
             # remove startLayer
             gameScene.remove(readyLayer)
 
@@ -243,9 +243,9 @@ def getPassword(value):
     password = value
 
 def checkAccount():
-    if userName != "shenwzh" and password != "123456":
-        showContent("Username or password incorrect!")
-    else:
+    # if userName != "shenwzh" and password != "123456":
+    #     showContent("Username or password incorrect!")
+    # else:
         gameLayer.remove("signIn_menu")
         # add moving bird
         removeContent()
@@ -300,18 +300,21 @@ class SingleGameStartMenu(Menu):
 
     def gameStartEasy(self):
         gameLayer.remove("start_button")
+        global difficulty
         difficulty = 0
         # gameLayer.remove("diff_menu")
         singleGameReady()
 
     def gameStartMedium(self):
         gameLayer.remove("start_button")
+        global difficulty
         difficulty = 1
         # gameLayer.remove("diff_menu")
         singleGameReady() 
 
     def gameStartHard(self):
         gameLayer.remove("start_button")
+        global difficulty
         difficulty = 2
         # gameLayer.remove("diff_menu")
         singleGameReady()  

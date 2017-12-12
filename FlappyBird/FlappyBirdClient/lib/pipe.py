@@ -16,7 +16,7 @@ import common
 pipeCount = 2
 pipeHeight = 320
 pipeWidth = 52
-pipeDistance = 100    #上下管道间的距离
+# pipeDistance = 150    #上下管道间的距离
 pipeInterval = 180    #两根管道的水平距离
 waitDistance = 100    #开始时第一根管道距离屏幕最右侧的距离
 heightOffset = 25     #管道的高度偏移值
@@ -34,8 +34,9 @@ class ActorModel(object):
             self.cshape = CircleShape(eu.Vector2(center_x, center_y), radius)
             self.name = name
 
-def createPipes(layer, gameScene, spriteBird, score):
+def createPipes(layer, gameScene, spriteBird, score, difficulty):
     global g_score, movePipeFunc, calScoreFunc
+    pipeDistance = 140 - difficulty * 25
     def initPipe():
         for i in range(0, pipeCount):
             #把downPipe和upPipe组合为singlePipe

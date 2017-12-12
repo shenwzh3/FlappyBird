@@ -14,7 +14,7 @@ import common
 collision_manager = None
 collision_func = None
 
-def addCollision(gameScene, gameLayer, spriteBird, pipes, land_1, land_2):
+def addCollision(gameScene, gameLayer, spriteBird, pipes, land_1, land_2,difficulty):
     global collision_manager, collision_func, upPipeCollided, isCollided, pipeDistance
     #设置land区域对应的刚体
     landSprite = CollidableRectSprite("land", (common.visibleSize["width"])/2, (atlas["land"]["height"] / 4 - 3), (common.visibleSize["width"])/2, (atlas["land"]["height"])/2)
@@ -25,7 +25,7 @@ def addCollision(gameScene, gameLayer, spriteBird, pipes, land_1, land_2):
     upPipeY = getUpPipeYPosition()
     upPipeCollided = False
     isCollided = False
-    pipeDistance = 100
+    pipeDistance = 140 - difficulty * 25
 
     #初始化碰撞管理器
     collision_manager = CollisionManagerBruteForce()

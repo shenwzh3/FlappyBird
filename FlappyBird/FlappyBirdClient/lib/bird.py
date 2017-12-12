@@ -13,7 +13,7 @@ import common
 
 #constants
 gravity = -800   #重力大小
-upSpeed = 250    #点击后上升的高度
+upSpeed = 275    #点击后上升的高度
 
 #vars
 AIFunc = None
