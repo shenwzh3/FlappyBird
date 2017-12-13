@@ -8,17 +8,35 @@ sid = 0
 
 
 
-# a little bug here
-def checkAuthentication(signInInformation):
+def checkSignInAuthentication(signInInformation):
 	json_file = open('signinlist.json')
 	data = json.load(json_file)
    	userInfoList = data['userInfo']
+   	json_file.close()
    	print userInfoList
     # signInInformation = {'userName':userName,'password':password]}
 	for i in range(len(userInfoList)):
-		if signInInformation['userName'] in userInfoList[i]['userName'] and signInInformation['password'] in userInfoList[i]['password']:
+		if signInInformation['userName'] == userInfoList[i]['userName'] and signInInformation['password'] == userInfoList[i]['password']:
 			return True
 	return False
+
+def checkSignUpAuthentication(signUpInformation):
+	json_file = open('signinlist.json')
+	data = json.load(json_file)
+   	userInfoList = data['userInfo']
+   	json_file.close()
+   	print userInfoList
+    # signUpInformation = {'userName':userName,'password':password]}
+	for i in range(len(userInfoList)):
+		if signUpInformation['userName'] == userInfoList[i]['userName']:
+			return False
+	# write the new signUp into signinlist.json file
+	json_file = open('signinlist.json','w')
+	data['userInfo'].append(signUpInformation)
+	json_file.write(json.dumps(data))
+	json_file.close()
+	return True
+
 
 if __name__ == "__main__":
 	s = socket.socket()
@@ -74,13 +92,23 @@ while inputs:
 					if 'signInAuthentication' in recvData:
 						number = recvData['sid']
 						signInInformation = recvData['signInAuthentication']
-						print 'authentication:',signInInformation
-						if checkAuthentication(signInInformation):
+						print 'signin authentication:',signInInformation
+						if checkSignInAuthentication(signInInformation):
 							sendData = {'authenResult':True}
-							netstream.send(onlineUser[number]['connection'],sendData)
 						else:
 							sendData = {'authenResult':False}
-							netstream.send(onlineUser[number]['connection'],sendData)
+						netstream.send(onlineUser[number]['connection'],sendData)
+
+					if 'signUpAuthentication' in recvData:
+						number = recvData['sid']
+						signUpInformation = recvData['signUpAuthentication']
+						print 'signup authentication:',signUpInformation
+						if checkSignUpAuthentication(signUpInformation):
+							sendData = {'signUpSucceed':True}
+						else:
+							sendData = {'authenResult':False}
+						netstream.send(onlineUser[number]['connection'],sendData)
+
 
 
 	except Exception:
