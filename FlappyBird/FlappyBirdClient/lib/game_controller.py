@@ -244,20 +244,23 @@ def getPassword(value):
     password = value
 
 def checkAccount():
-    removeContent()
-    gameLayer.remove("signIn_menu")
-    # gameLayer.remove("signIn_menu")
-    # # add moving bird
-    # removeContent()
-    # global spriteBird
-    # spriteBird = creatBird()
-    # gameLayer.add(spriteBird, z=20)
-    # start_botton = SingleGameStartMenu()  
-    # gameLayer.add(start_botton, z=20, name="start_button")
-    signIn_Authen({'userName':userName,'password':password})
-    waitLabel()
-    # if check== False:
-    #     showContent("Username or password incorrect!")
+    if len(userName) < 3 or len(userName) > 8:
+        showContent('please enter the correct username')
+    else:
+        removeContent()
+        gameLayer.remove("signIn_menu")
+        # gameLayer.remove("signIn_menu")
+        # # add moving bird
+        # removeContent()
+        # global spriteBird
+        # spriteBird = creatBird()
+        # gameLayer.add(spriteBird, z=20)
+        # start_botton = SingleGameStartMenu()  
+        # gameLayer.add(start_botton, z=20, name="start_button")
+        signIn_Authen({'userName':userName,'password':password})
+        waitLabel()
+        # if check== False:
+        #     showContent("Username or password incorrect!")
                  
 def authenticationSucceed():
     # add moving bird
