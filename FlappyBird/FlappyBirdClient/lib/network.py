@@ -42,7 +42,7 @@ def connect(gameScene):
         if 'authenResult' in data:
             import game_controller
             if data['authenResult']==False:
-                game_controller.showContent("Username or password incorrect!")
+                game_controller.authenticationFailed()
             else:
                 game_controller.authenticationSucceed()
             
@@ -67,3 +67,7 @@ def signIn_Authen(signInInformation):
     send_data['signInAuthentication'] = signInInformation
     netstream.send(sock, send_data)
 
+def signUp_Authen(signUpInformation):
+    send_data = get_send_data()
+    send_data['signUpAuthentication'] = signUpInformation
+    netstream.send(sock, send_data)

@@ -36,11 +36,11 @@ class ActorModel(object):
 
 def createPipes(layer, gameScene, spriteBird, score, difficulty):
     global g_score, movePipeFunc, calScoreFunc
-    pipeDistance = 130 - difficulty * 20
+    pipeDistance = 120 - difficulty * 17
     # 一开始先生成两个pipe，然后移动的过程中，pipe[1]不断替换pipe[0]，
     # 并生成新的pipe[1]    modified by Joe at 2017.12.12
     def initPipe():
-        for i in range(0, pipeCount):
+        for i in range(0, 2):
             #把downPipe和upPipe组合为singlePipe
             downPipe = CollidableRectSprite("pipe_down", 0, (pipeHeight + pipeDistance), pipeWidth/2, pipeHeight/2) #朝下的pipe而非在下方的pipe
             upPipe = CollidableRectSprite("pipe_up", 0, 0, pipeWidth/2, pipeHeight/2)  #朝上的pipe而非在上方的pipe
@@ -50,17 +50,17 @@ def createPipes(layer, gameScene, spriteBird, score, difficulty):
             
             #设置管道高度和位置
             # print 'ok\n'
-            heightOffset = random.randint(-60,80)
+            heightOffset = random.randint(0,200)
             singlePipe.position=(common.visibleSize["width"] + i*pipeInterval + waitDistance, heightOffset)
             layer.add(singlePipe, z=10)
             pipes[i] = singlePipe
             pipeState[i] = PIPE_NEW
-            upPipeYPosition[i] = heightOffset + pipeHeight/2
-            downPipeYPosition[i] = heightOffset + pipeHeight/2 + pipeDistance
+            upPipeYPosition[i] = heightOffset + pipeHeight/2 - 80
+            downPipeYPosition[i] = heightOffset + pipeHeight/2 + pipeDistance - 80
 
     # 每当一个管道移除界面，就重新创建一个管道 modified by Joe at 2017.12.12
     def movePipe(dt):
-        moveDistance = common.visibleSize["width"]/(2*60)   # 移动速度和land一致
+        moveDistance = common.visibleSize["width"]/(2*60*(1-difficulty*0.13))   # 移动速度和land一致
         pipes[0].position = (pipes[0].position[0]-moveDistance, pipes[0].position[1])
         pipes[1].position = (pipes[1].position[0]-moveDistance, pipes[1].position[1])
         if pipes[0].position[0] < -pipeWidth:

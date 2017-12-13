@@ -26,8 +26,6 @@ startLayer = None
 pipes = None
 score = 0
 listener = None
-# account = None
-# password = None
 ipTextField = None
 errorLabel = None
 isGamseStart = False
@@ -35,6 +33,7 @@ diffBuf = ["easy","medium","hard"]
 difficulty = 0
 userName = ''
 password = ''
+password_confirm = ''
 
 def initGameLayer():
     global gameLayer, land_1, land_2
@@ -245,14 +244,25 @@ def getPassword(value):
     password = value
 
 def checkAccount():
+    removeContent()
+    gameLayer.remove("signIn_menu")
+    # gameLayer.remove("signIn_menu")
+    # # add moving bird
+    # removeContent()
+    # global spriteBird
+    # spriteBird = creatBird()
+    # gameLayer.add(spriteBird, z=20)
+    # start_botton = SingleGameStartMenu()  
+    # gameLayer.add(start_botton, z=20, name="start_button")
     signIn_Authen({'userName':userName,'password':password})
+    waitLabel()
     # if check== False:
     #     showContent("Username or password incorrect!")
                  
 def authenticationSucceed():
-    gameLayer.remove("signIn_menu")
     # add moving bird
     removeContent()
+    gameLayer.remove('wait_text')
     global spriteBird
     spriteBird = creatBird()
     gameLayer.add(spriteBird, z=20)
@@ -272,6 +282,13 @@ def authenticationSucceed():
 #         gameLayer.add(start_botton, z=20, name="start_button")      
 # >>>>>>> 97883b2fd6551d04f250179b02f77f74c3f5961e
 
+# 登陆失败
+def authenticationFailed():
+    gameLayer.remove('wait_text')
+    signIn_menu = SigninMenu()
+    gameLayer.add(signIn_menu,z=20,name = 'signIn_menu')
+    showContent('Username or password incorrect')
+    
 
 
 class RestartMenu(Menu):
@@ -358,6 +375,110 @@ class SingleGameSignMenu(Menu):
         gameLayer.add(signIn_menu,z=20, name = "signIn_menu")
 
     def signUp(self): #注册
-            pass    
+        gameLayer.remove("sign_button")
+        signUp_menu = SignUpMenu()
+        gameLayer.add(signUp_menu,z=20, name = "signUp_menu") 
 
 
+ # 注册输入框类 modified by Joe at 2017.12.13
+class SignUpMenu(Menu):
+     """docstring for SignUpMenu"""
+     def __init__(self):
+
+        super(SignUpMenu, self).__init__()
+
+        self.font_title = {
+            'text': 'title',
+            'font_name': 'Arial',
+            'font_size': 32,
+            'color': (192, 192, 192, 255),
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'dpi': 96,
+            'x': 0, 'y': 0,
+        }
+
+        self.font_item = {
+            'font_name': 'Arial',
+            'font_size': 16,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+        self.font_item_selected = {
+            'font_name': 'Arial',
+            'font_size': 20,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+
+        self.menu_valign = CENTER  
+        self.menu_halign = CENTER
+        items = [
+                (EntryMenuItem("Username:",getUsername,"")),
+                (EntryPwdMenuItem("Password:",getPassword,"")),
+                (EntryPwdMenuItem("PswConfirm:",confirmPassword,"")),
+                (ImageMenuItem(common.load_image("button_ok.png"), checkSignUp))
+                ]
+        self.create_menu(items)
+
+# 获取密码验证
+def confirmPassword(value):
+    global password_confirm
+    password_confirm = value
+
+# 进行注册
+def checkSignUp():
+    removeContent()
+    if len(userName) > 8 or len(userName) < 3:
+        showContent('username should be at least 3 characters and not longer than 8 characters')
+    elif len(password) > 10 or len(password) < 6:
+        showContent('password should be at least 6 characters and not longer than 10 characters')
+    elif not password == password_confirm:
+        showContent('the passwords you entered are different!')
+    else:
+        signUp_Authen({'userName':userName,'password':password})
+        gameLayer.remove('signUp_menu')
+        waitLabel()
+
+# 注册失败
+def signUpFailed():
+    gameLayer.remove('wait_text')
+    signUp_menu = SignUpMenu()
+    gameLayer.add(signUp_menu,z = 20,name = 'signUp_menu')
+    showContent('Username already existed')
+
+# 注册成功
+def signUpSucceed():
+    gameLayer.remove('wait_text')
+    global spriteBird
+    spriteBird = creatBird()
+    gameLayer.add(spriteBird, z=20)
+    start_botton = SingleGameStartMenu()  
+    gameLayer.add(start_botton, z=20, name="start_button")
+
+
+# 为防止用户频繁点击按钮造成通讯错误，使用一个等待界面来过渡
+# modified by Joe at 2017.12.13
+def waitLabel():
+    removeContent()
+    wait_text = Label(
+        "Waiting....",
+        (common.visibleSize["width"]/2, common.visibleSize["height"]/2),
+        font_size = 20,
+        font_name = 'Arial',
+        anchor_x = 'center',
+        anchor_y = 'center'
+        )
+    gameLayer.add(wait_text,z=20,name ='wait_text')
+
+  
