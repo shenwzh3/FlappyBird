@@ -45,12 +45,16 @@ def connect(gameScene):
                 game_controller.authenticationFailed()
             else:
                 game_controller.authenticationSucceed()
+
         if 'signUpSucceed' in data:
             import game_controller
-            if data['signUpSucceed']==False:
-                game_controller.signUpFailed()
+            if data['signUpSucceed'] == False:
+                game_controller.SignUpFailed()
             else:
-                game_controller.signUpSucceed()    
+                game_controller.signUpSucceed()
+
+            
+>>>>>>> 3c95a38d8bbc54eb509ac571d0f0481439d0299d
 
     gameScene.schedule(receiveServer)
     return connected
