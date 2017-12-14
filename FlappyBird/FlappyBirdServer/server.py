@@ -37,6 +37,34 @@ def checkSignUpAuthentication(signUpInformation):
 	json_file.close()
 	return True
 
+def storeScoreInServer(scoreInformation):
+    filename = 'scores_server.json'
+    file = open(filename,'r')  
+    data = json.load(file)
+    file.close()
+    firstTime = True
+    for user in data:
+        if user['userName']==scoreInformation['userName']:
+            firstTime = False
+            for dif in user['scores']:
+                if dif['difficulty']==scoreInformation['difficulty'] :
+                    dif['scores'].append(scoreInformation['score'])#dif['scores'] is a list of score
+    if firstTime:
+        dif0 = {'difficulty':0,'scores':[]}
+        dif1 = {'difficulty':1,'scores':[]}
+        dif2 = {'difficulty':2,'scores':[]}
+        diflst = [dif0,dif1,dif2]
+        for dif in diflst:
+            if dif['difficulty']==scoreInformation['difficulty'] :
+                dif['scores'].append(scoreInformation['score'])
+        d = {}
+        d['userName'] = scoreInformation['userName']
+        d['scores'] = diflst
+        data.append(d)
+    file = open(filename,'w')
+    json.dump(data,file,ensure_ascii=False)  
+    file.close()  
+  
 
 if __name__ == "__main__":
 	s = socket.socket()
@@ -109,6 +137,11 @@ while inputs:
 							sendData = {'signUpSucceed':False}
 						netstream.send(onlineUser[number]['connection'],sendData)
 
+					if 'scoreInformation' in recvData:
+						number = recvData['sid']
+						scoreInformation = recvData['scoreInformation']
+						print 'score:',scoreInformation
+						storeScoreInServer(scoreInformation)
 
 
 	except Exception:

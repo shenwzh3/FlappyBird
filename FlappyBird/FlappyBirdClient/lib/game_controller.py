@@ -231,19 +231,26 @@ class SigninMenu(Menu):
         self.menu_valign = CENTER  
         self.menu_halign = CENTER
         items = [
-                (EntryMenuItem("Username:",getUsername,"")),
-                (EntryPwdMenuItem("Password:",getPassword,"")),
+                (EntryMenuItem("Username:",setUserName,"")),
+                (EntryPwdMenuItem("Password:",setPassword,"")),
                 (ImageMenuItem(common.load_image("button_ok.png"), checkAccount))
                 ]
         self.create_menu(items)
 
-def getUsername(value):
+def setUserName(value):
     global userName
     userName = value
 
-def getPassword(value):
+def setPassword(value):
     global password
     password = value
+
+def getUserName():
+    return userName
+def getPassword():
+    return password
+def getDifficulty():
+    return difficulty
 
 def checkAccount():
     if len(userName) < 3 or len(userName) > 8:
@@ -436,8 +443,8 @@ class SignUpMenu(Menu):
         self.menu_valign = CENTER  
         self.menu_halign = CENTER
         items = [
-                (EntryMenuItem("Username:",getUsername,"")),
-                (EntryPwdMenuItem("Password:",getPassword,"")),
+                (EntryMenuItem("Username:",setUserName,"")),
+                (EntryPwdMenuItem("Password:",setPassword,"")),
                 (EntryPwdMenuItem("PswConfirm:",confirmPassword,"")),
                 (ImageMenuItem(common.load_image("button_ok.png"), checkSignUp))
                 ]

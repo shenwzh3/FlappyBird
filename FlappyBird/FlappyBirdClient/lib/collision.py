@@ -8,11 +8,14 @@ from atlas import *
 from bird import *
 from score import *
 from game_controller import *
+from network import *
 import common
+import json
 
 # contactListener
 collision_manager = None
 collision_func = None
+
 
 def addCollision(gameScene, gameLayer, spriteBird, pipes, land_1, land_2,difficulty):
     global collision_manager, collision_func, upPipeCollided, isCollided, pipeDistance
@@ -75,18 +78,109 @@ def addCollision(gameScene, gameLayer, spriteBird, pipes, land_1, land_2,difficu
     collision_func = collisionHandler
     gameScene.schedule(collisionHandler)
 
+
+def storeScoreInClient(scoreInformation):
+    filename = common.get_filename('scores_client.json')
+    file = open(filename,'r')  
+    data = json.load(file)
+    file.close()
+    firstTime = True
+    for user in data:
+        if user['userName']==scoreInformation['userName']:
+            firstTime = False
+            for dif in user['scores']:
+                if dif['difficulty']==scoreInformation['difficulty'] :
+                    dif['scores'].append(scoreInformation['score'])#dif['scores'] is a list of score
+    if firstTime:
+        dif0 = {'difficulty':0,'scores':[]}
+        dif1 = {'difficulty':1,'scores':[]}
+        dif2 = {'difficulty':2,'scores':[]}
+        diflst = [dif0,dif1,dif2]
+        for dif in diflst:
+            if dif['difficulty']==scoreInformation['difficulty'] :
+                dif['scores'].append(scoreInformation['score'])
+        d = {}
+        d['userName'] = scoreInformation['userName']
+        d['scores'] = diflst
+        data.append(d)
+    file = open(filename,'w')
+    json.dump(data,file,ensure_ascii=False)  
+    file.close()  
+                        
+
+
+
+# when gameOver store locally and send to server the rate
 def gameOver(gameScene, land_1, land_2, spriteBird, upPipeCollided):
     global collision_func
     land_1.stop()
     land_2.stop()
-
     removeMovePipeFunc(gameScene)
     removeCalScoreFunc(gameScene)
     removeBirdTouchHandler(gameScene)
     if upPipeCollided and collision_func:
         gameScene.unschedule(collision_func)
         spriteBird.stop()
+         # ###### yyy add 12/15/17
         import game_controller
-        game_controller.backToMainMenu()
+        import pipe
+        # print game_controller.getUserName(),pipe.getGameScore()
+        scoreInformation = {'userName':game_controller.getUserName(),'difficulty':game_controller.getDifficulty(),'score':pipe.getGameScore()}
+        storeScoreInClient(scoreInformation)
+        sendScoreToServer(scoreInformation)
+        # ######
+        game_controller.backToMainMenu()    
+   
+
+
 
     
+# json file format:
+# [
+#     {
+#         "userName": "yyy",
+#         "scores": [
+#             {
+#                 "difficulty": 0,
+#                 "scores": [
+#                     1
+#                 ]
+#             },
+#             {
+#                 "difficulty": 1,
+#                 "scores": [
+#                     1
+#                 ]
+#             },
+#             {
+#                 "difficulty": 2,
+#                 "scores": [
+#                     1
+#                 ]
+#             }
+#         ]
+#     },
+#     {
+#         "userName": "shenwzh",
+#         "scores": [
+#             {
+#                 "difficulty": 0,
+#                 "scores": [
+#                     1
+#                 ]
+#             },
+#             {
+#                 "difficulty": 1,
+#                 "scores": [
+#                     1
+#                 ]
+#             },
+#             {
+#                 "difficulty": 2,
+#                 "scores": [
+#                     1
+#                 ]
+#             }
+#         ]
+#     }
+# ]

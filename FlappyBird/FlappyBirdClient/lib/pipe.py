@@ -28,6 +28,7 @@ pipeState = {}    #PIPE_NEW or PIPE_PASS
 downPipeYPosition = {}    #朝下pipe的最下侧的y坐标
 upPipeYPosition = {}  #朝上pipe的最上侧的y坐标
 pipeIndex = 0
+g_score = 0;
 
 class ActorModel(object):
     def __init__(self, cx, cy, half_width, half_height,name):
@@ -126,3 +127,6 @@ def getPipeCount():
 
 def getPipeWidth():
     return pipeWidth
+
+def getGameScore():
+    return g_score

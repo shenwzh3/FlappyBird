@@ -77,3 +77,9 @@ def signUp_Authen(signUpInformation):
     send_data = get_send_data()
     send_data['signUpAuthentication'] = signUpInformation
     netstream.send(sock, send_data)
+
+def sendScoreToServer(scoreInformation):
+    print 'sendScoreToServer'
+    send_data = get_send_data()
+    send_data['scoreInformation'] = scoreInformation
+    netstream.send(sock, send_data)
