@@ -55,10 +55,10 @@ def game_start(_gameScene):
     # 给gameScene赋值
     gameScene = _gameScene
     initGameLayer()
-    sign_botton = SingleGameSignMenu()
-    gameLayer.add(sign_botton, z=20, name="sign_button")
-    # start_botton = SingleGameStartMenu()
-    # gameLayer.add(start_botton, z=20, name="start_button")
+    sign_button = SingleGameSignMenu()
+    gameLayer.add(sign_button, z=20, name="sign_button")
+    # start_button = SingleGameStartMenu()
+    # gameLayer.add(start_button, z=20, name="start_button")
 
     # 向服务器端请求连接
     connect(gameScene) 
@@ -128,7 +128,9 @@ def singleGameReady():
 
 def backToMainMenu():
     restartButton = RestartMenu()
-    gameLayer.add(restartButton, z=50)
+    logOut_menu = logOutMenu()
+    gameLayer.add(restartButton, z=50,name = "restartButton")
+    gameLayer.add(logOut_menu,z = 20,name = "logOut_menu")
 
 def showNotice():
     connected = connect(gameScene) # connect is from network.py
@@ -255,8 +257,8 @@ def checkAccount():
         # global spriteBird
         # spriteBird = creatBird()
         # gameLayer.add(spriteBird, z=20)
-        # start_botton = SingleGameStartMenu()  
-        # gameLayer.add(start_botton, z=20, name="start_button")
+        # start_button = SingleGameStartMenu()  
+        # gameLayer.add(start_button, z=20, name="start_button")
         signIn_Authen({'userName':userName,'password':password})
         waitLabel()
         # if check== False:
@@ -269,8 +271,10 @@ def authenticationSucceed():
     global spriteBird
     spriteBird = creatBird()
     gameLayer.add(spriteBird, z=20)
-    start_botton = SingleGameStartMenu()  
-    gameLayer.add(start_botton, z=20, name="start_button")
+    start_button = SingleGameStartMenu()
+    logOut_menu = logOutMenu()  
+    gameLayer.add(start_button, z=20, name="start_button")
+    gameLayer.add(logOut_menu,z = 20,name="logOut_menu")
 # =======
 #     if userName != "shenwzh" and password != "123456":
 #         showContent("Username or password incorrect!")
@@ -281,8 +285,8 @@ def authenticationSucceed():
 #         global spriteBird
 #         spriteBird = creatBird()
 #         gameLayer.add(spriteBird, z=20)
-#         start_botton = SingleGameStartMenu()
-#         gameLayer.add(start_botton, z=20, name="start_button")      
+#         start_button = SingleGameStartMenu()
+#         gameLayer.add(start_button, z=20, name="start_button")      
 # >>>>>>> 97883b2fd6551d04f250179b02f77f74c3f5961e
 
 # 登陆失败
@@ -311,8 +315,10 @@ class RestartMenu(Menu):
         global spriteBird
         spriteBird = creatBird()
         gameLayer.add(spriteBird, z=20)
-        start_botton = SingleGameStartMenu()
-        gameLayer.add(start_botton, z=20, name="start_button") 
+        start_button = SingleGameStartMenu()
+        logOut_menu = logOutMenu()
+        gameLayer.add(start_button, z=20, name="start_button") 
+        gameLayer.add(logOut_menu, z=20, name="logOut_menu")
         isGamseStart = False
         # singleGameReady()
 
@@ -337,6 +343,7 @@ class SingleGameStartMenu(Menu):
 
     def gameStartEasy(self):
         gameLayer.remove("start_button")
+        gameLayer.remove("logOut_menu")
         global difficulty
         difficulty = 0
         # gameLayer.remove("diff_menu")
@@ -344,6 +351,7 @@ class SingleGameStartMenu(Menu):
 
     def gameStartMedium(self):
         gameLayer.remove("start_button")
+        gameLayer.remove("logOut_menu")
         global difficulty
         difficulty = 1
         # gameLayer.remove("diff_menu")
@@ -351,6 +359,7 @@ class SingleGameStartMenu(Menu):
 
     def gameStartHard(self):
         gameLayer.remove("start_button")
+        gameLayer.remove("logOut_menu")
         global difficulty
         difficulty = 2
         # gameLayer.remove("diff_menu")
@@ -372,8 +381,8 @@ class SingleGameSignMenu(Menu):
     
     def signIn(self): #登陆
         gameLayer.remove("sign_button")
-        # start_botton = SingleGameStartMenu()
-        # gameLayer.add(start_botton, z=20, name="start_button")
+        # start_button = SingleGameStartMenu()
+        # gameLayer.add(start_button, z=20, name="start_button")
         signIn_menu = SigninMenu()
         gameLayer.add(signIn_menu,z=20, name = "signIn_menu")
 
@@ -466,8 +475,10 @@ def signUpSucceed():
     global spriteBird
     spriteBird = creatBird()
     gameLayer.add(spriteBird, z=20)
-    start_botton = SingleGameStartMenu()  
-    gameLayer.add(start_botton, z=20, name="start_button")
+    start_button = SingleGameStartMenu()
+    logOut_menu = logOutMenu()  
+    gameLayer.add(start_button, z=20, name="start_button")
+    gameLayer.add(logOut_menu, z=20, name="logOut_menu")
 
 
 # 为防止用户频繁点击按钮造成通讯错误，使用一个等待界面来过渡
@@ -484,4 +495,69 @@ def waitLabel():
         )
     gameLayer.add(wait_text,z=20,name ='wait_text')
 
-  
+# 切换用户菜单 modified by Joe at 2017.12.14
+class logOutMenu(Menu):
+    """docstring for logOutMenu"""
+    def __init__(self):
+        super(logOutMenu, self).__init__()
+
+        self.font_title = {
+            'text': 'title',
+            'font_name': 'Arial',
+            'font_size': 32,
+            'color': (192, 192, 192, 255),
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'dpi': 96,
+            'x': 0, 'y': 0,
+        }
+
+        self.font_item = {
+            'font_name': 'Arial',
+            'font_size': 32,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'right',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+        self.font_item_selected = {
+            'font_name': 'Arial',
+            'font_size': 35,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'right',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+
+        self.menu_valign = TOP  
+        self.menu_halign = RIGHT
+        items = [
+                (EntryMenuItem("",nofunc,userName)),
+                (ImageMenuItem(common.load_image("button_logOut.png"), logOut))
+                ]
+        self.create_menu(items)  
+
+# 咩事都冇
+def nofunc():
+    pass
+
+# 登出函数
+def logOut():
+    global userName,Password,password_confirm
+    userName = ""
+    password = ""
+    password_confirm = ""
+    gameScene.remove(gameLayer)
+    initGameLayer()
+    # global spriteBird
+    # spriteBird = creatBird()
+    # gameLayer.add(spriteBird, z=20)
+    sign_button = SingleGameSignMenu()
+    gameLayer.add(sign_button, z=20, name="sign_button")
+    isGamseStart = False
