@@ -106,7 +106,7 @@ while inputs:
 						if checkSignUpAuthentication(signUpInformation):
 							sendData = {'signUpSucceed':True}
 						else:
-							sendData = {'authenResult':False}
+							sendData = {'signUpSucceed':False}
 						netstream.send(onlineUser[number]['connection'],sendData)
 
 
