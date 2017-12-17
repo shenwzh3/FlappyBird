@@ -9,7 +9,7 @@ from bird import *
 from score import *
 from game_controller import *
 from network import *
-import common
+import common 
 import json
 
 # contactListener
@@ -84,7 +84,7 @@ def storeScoreInClient(scoreInformation):
     file = open(filename,'r')  
     data = json.load(file)
     file.close()
-    firstTime = True
+    
     for user in data:
         if user['userName']==scoreInformation['userName']:
             firstTime = False
@@ -128,6 +128,8 @@ def gameOver(gameScene, land_1, land_2, spriteBird, upPipeCollided):
         scoreInformation = {'userName':game_controller.getUserName(),'difficulty':game_controller.getDifficulty(),'score':pipe.getGameScore()}
         storeScoreInClient(scoreInformation)
         sendScoreToServer(scoreInformation)
+        # 向服务器发送请求成绩数据
+        # sendScoreRequesttoServer()
         # ######
         game_controller.backToMainMenu()    
    

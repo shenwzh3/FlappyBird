@@ -34,6 +34,8 @@ difficulty = 0
 userName = ''
 password = ''
 password_confirm = ''
+scoreListOnline = []
+scoreListLocal = []
 
 def initGameLayer():
     global gameLayer, land_1, land_2
@@ -76,6 +78,9 @@ def createLabel(value, x, y):
 
 # single game start button的回调函数
 def singleGameReady():
+    # 给服务其发一个请求该难度下前十的成绩：
+    sendScoreRequesttoServer({'difficulty':difficulty})
+    setScoreListLocal()
     removeContent()
     ready = createAtlasSprite("text_ready")
     ready.position = (common.visibleSize["width"]/2, common.visibleSize["height"] * 3/4)
@@ -126,9 +131,11 @@ def singleGameReady():
     readyLayer.add(tutorial)
     gameScene.add(readyLayer, z=10)
 
+# 更改游戏结束时的界面 modified by Joe at 2017.12.17
 def backToMainMenu():
     restartButton = RestartMenu()
     logOut_menu = logOutMenu()
+    drawScorePanel()
     gameLayer.add(restartButton, z=50,name = "restartButton")
     gameLayer.add(logOut_menu,z = 20,name = "logOut_menu")
 
@@ -308,13 +315,35 @@ def authenticationFailed():
 class RestartMenu(Menu):
     def __init__(self):  
         super(RestartMenu, self).__init__()
+
+        self.font_item = {
+            'font_name': 'Arial',
+            'font_size': 40,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'color': (192, 192, 192, 255),
+            'dpi': 96,
+        }
+        self.font_item_selected = {
+            'font_name': 'Arial',
+            'font_size': 40,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+
         self.menu_valign = CENTER  
         self.menu_halign = CENTER
         items = [
                 (ImageMenuItem(common.load_image("button_restart.png"), self.initMainMenu)),
                 (ImageMenuItem(common.load_image("button_score.png"), showScore))
                 ]  
-        self.create_menu(items,selected_effect=zoom_in(),unselected_effect=zoom_out())
+        self.create_menu(items, layout_strategy = fixedPositionMenuLayout([(74,200),(154,200)]))
 
     def initMainMenu(self):
         gameScene.remove(gameLayer)
@@ -329,8 +358,12 @@ class RestartMenu(Menu):
         isGamseStart = False
         # singleGameReady()
 
+# 显示排行
 def showScore():
-    pass
+    gameLayer.remove("restartButton")
+    gameLayer.remove("logOut_menu")
+    sendScoreRequesttoServer()
+    
 
 
 
@@ -568,3 +601,53 @@ def logOut():
     sign_button = SingleGameSignMenu()
     gameLayer.add(sign_button, z=20, name="sign_button")
     isGamseStart = False
+
+# 设置分数排行 modified by Joe at 2017.12.17
+def setScoreListOnline(data):
+    global scoreListOnline
+    scoreListOnline = data
+    # print 'scoreListOnline:',scoreListOnline
+
+def setScoreListLocal():
+    global scoreListLocal
+    filename = common.get_filename('scores_client.json')
+    file = open(filename,'r')  
+    data = json.load(file)
+    file.close()
+    scorelist = []
+    for user in data:
+        userName = user['userName']
+        for score in user['scores']:
+            if score['difficulty'] == difficulty:
+                for i in range(0,len(score['scores'])):
+                    scorelist.append((userName,score['scores'][i]))
+    # print 'scorelist:',scorelist
+    def cmp(s):
+        return s[1]
+    sortedlist = sorted(scorelist,key = cmp,reverse = True)
+    toReturn = sortedlist[:10]
+    # print 'toReturn:',toReturn
+    scoreListLocal = toReturn
+    # print 'scoreListLocal:',scoreListLocal
+
+# 显示分数板 modified by Joe at 2017.12.17
+def drawScorePanel():
+    score = getGameScore()
+    maxscore = max(score,scoreListLocal[0][1],scoreListOnline[0][1])
+    scorePanel = createAtlasSprite('score_panel')
+    scorePanel.position = (common.visibleSize["width"]/2, common.visibleSize["height"] /2 + 30)
+    gameLayer.add(scorePanel,z=30,name = 'scorePanel')
+    scoreLabel = Label(str(score),
+                            (180,292),
+                            font_name='Arial',
+                            bold = True,
+                            color = (255,255,255,255),
+                            font_size = 16)
+    maxscoreLabel = Label(str(maxscore),
+                            (180,257),
+                            font_name='Arial',
+                            bold = True,
+                            color = (255,255,255,255),
+                            font_size = 16)
+    gameLayer.add(scoreLabel,z=31,name = 'scoreLabel')
+    gameLayer.add(maxscoreLabel,z=31,name = 'maxscoreLabel')

@@ -53,6 +53,10 @@ def connect(gameScene):
             else:
                 game_controller.signUpSucceed()
 
+        if 'scoreList' in data:
+            import game_controller
+            game_controller.setScoreListOnline(data['scoreList'])
+
     gameScene.schedule(receiveServer)
     return connected
 
@@ -79,7 +83,12 @@ def signUp_Authen(signUpInformation):
     netstream.send(sock, send_data)
 
 def sendScoreToServer(scoreInformation):
-    print 'sendScoreToServer'
+    # print 'sendScoreToServer'
     send_data = get_send_data()
     send_data['scoreInformation'] = scoreInformation
+    netstream.send(sock, send_data)
+
+def sendScoreRequesttoServer(scoreRequest):
+    send_data = get_send_data()
+    send_data['scoreRequest'] = scoreRequest
     netstream.send(sock, send_data)

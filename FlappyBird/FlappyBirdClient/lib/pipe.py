@@ -53,11 +53,11 @@ def createPipes(layer, gameScene, spriteBird, score, difficulty):
             # print 'ok\n'
             heightOffset = random.randint(0,200)
             singlePipe.position=(common.visibleSize["width"] + i*pipeInterval + waitDistance, heightOffset)
-            layer.add(singlePipe, z=10)
+            layer.add(singlePipe, z=9)
             pipes[i] = singlePipe
             pipeState[i] = PIPE_NEW
-            upPipeYPosition[i] = heightOffset + pipeHeight/2 - 80
-            downPipeYPosition[i] = heightOffset + pipeHeight/2 + pipeDistance - 80
+            upPipeYPosition[i] = heightOffset + pipeHeight/2 - 60
+            downPipeYPosition[i] = heightOffset + pipeHeight/2 + pipeDistance - 60
 
     # 每当一个管道移除界面，就重新创建一个管道 modified by Joe at 2017.12.12
     def movePipe(dt):
@@ -82,7 +82,7 @@ def createPipes(layer, gameScene, spriteBird, score, difficulty):
             # print 'ok\n'
             heightOffset = random.randint(-80,80)
             singlePipe.position=(pipes[0].position[0] + pipeInterval, heightOffset)
-            layer.add(singlePipe, z=10)
+            layer.add(singlePipe, z=9)
             pipes[1] = singlePipe
             pipeState[1] = PIPE_NEW
             upPipeYPosition[1] = heightOffset + pipeHeight/2
