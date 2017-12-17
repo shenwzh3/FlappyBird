@@ -362,8 +362,12 @@ class RestartMenu(Menu):
 def showScore():
     gameLayer.remove("restartButton")
     gameLayer.remove("logOut_menu")
-    sendScoreRequesttoServer()
-    
+    gameLayer.remove("scorePanel")
+    gameLayer.remove("scoreLabel")
+    gameLayer.remove("maxscoreLabel")
+    drawRankLocal()
+    buttonRankOk = rankOkMenu()
+    gameLayer.add(buttonRankOk,z=31,name='buttonRankOk')
 
 
 
@@ -633,6 +637,7 @@ def setScoreListLocal():
 # 显示分数板 modified by Joe at 2017.12.17
 def drawScorePanel():
     score = getGameScore()
+    maxlocal = 0
     maxscore = max(score,scoreListLocal[0][1],scoreListOnline[0][1])
     scorePanel = createAtlasSprite('score_panel')
     scorePanel.position = (common.visibleSize["width"]/2, common.visibleSize["height"] /2 + 30)
@@ -651,3 +656,271 @@ def drawScorePanel():
                             font_size = 16)
     gameLayer.add(scoreLabel,z=31,name = 'scoreLabel')
     gameLayer.add(maxscoreLabel,z=31,name = 'maxscoreLabel')
+
+# 画本地排名 modified by Joe at 2017.12.18
+def drawRankLocal():
+    def cmp(s):
+        return s[1]
+    toprint = sorted(scoreListLocal,key = cmp,reverse = True)
+    listTitle = Label(
+                'Mode: '+diffBuf[difficulty],
+                (35,370),
+                font_name='Arial',
+                bold = True,
+                color = (255,255,255,255),
+                font_size = 20
+                )
+    gameLayer.add(listTitle,z=30,name="listTitle")
+
+    listType = Label(
+                'Local rank:',
+                (60,340),
+                font_name='Arial',
+                bold = True,
+                color = (255,255,255,255),
+                font_size = 16
+                )
+    gameLayer.add(listType,z=30,name="listType")
+
+    i = 0
+    while i < 10 and i < len(toprint):
+        userNameText = Label(
+                        toprint[i][0],
+                        (45,320 - i*17),
+                        font_name='Arial',
+                        color = (0,0,0,255),
+                        font_size = 16
+                        )
+        scoreText = Label(
+                    str(toprint[i][1]),
+                    (155,320 - i*17),
+                    font_name='Arial',
+                    color = (0,0,0,255),
+                    font_size = 16
+                    )
+        gameLayer.add(userNameText,z=30,name='userNameText'+str(i))
+        gameLayer.add(scoreText,z=30,name='scoreText'+str(i))
+        i = i + 1
+
+    while i < 10:
+        userNameText = Label(
+                        '......',
+                        (45,320 - i*17),
+                        font_name='Arial',
+                        color = (0,0,0,255),
+                        font_size = 16
+                        )
+        scoreText = Label(
+                    '......',
+                    (155,320 - i*17),
+                    font_name='Arial',
+                    color = (0,0,0,255),
+                    font_size = 16
+                    )
+        gameLayer.add(userNameText,z=30,name='userNameText'+str(i))
+        gameLayer.add(scoreText,z=30,name='scoreText'+str(i))
+        i = i + 1
+
+    buttonRightArrow = rightArrowMenu()
+    gameLayer.add(buttonRightArrow,z=30,name='buttonRightArrow')
+    global buttonRightExist
+    buttonRightExist = True
+
+# 画线上排名 modified by Joe at 2017.12.18
+def drawRankOnline():
+    def cmp(s):
+        return s[1]
+    toprint = sorted(scoreListOnline,key = cmp,reverse = True)
+    listTitle = Label(
+                'Mode: '+diffBuf[difficulty],
+                (35,370),
+                font_name='Arial',
+                bold = True,
+                color = (255,255,255,255),
+                font_size = 20
+                )
+    gameLayer.add(listTitle,z=30,name="listTitle")
+
+    listType = Label(
+                'Online rank:',
+                (60,340),
+                font_name='Arial',
+                bold = True,
+                color = (255,255,255,255),
+                font_size = 16
+                )
+    gameLayer.add(listType,z=30,name="listType")
+
+    i = 0
+    while i < 10 and i < len(toprint):
+        userNameText = Label(
+                        toprint[i][0],
+                        (45,320 - i*17),
+                        font_name='Arial',
+                        color = (0,0,0,255),
+                        font_size = 16
+                        )
+        scoreText = Label(
+                    str(toprint[i][1]),
+                    (155,320 - i*17),
+                    font_name='Arial',
+                    color = (0,0,0,255),
+                    font_size = 16
+                    )
+        gameLayer.add(userNameText,z=30,name='userNameText'+str(i))
+        gameLayer.add(scoreText,z=30,name='scoreText'+str(i))
+        i = i + 1
+
+    while i < 10:
+        userNameText = Label(
+                        '......',
+                        (45,320 - i*17),
+                        font_name='Arial',
+                        color = (0,0,0,255),
+                        font_size = 16
+                        )
+        scoreText = Label(
+                    '......',
+                    (155,320 - i*17),
+                    font_name='Arial',
+                    color = (0,0,0,255),
+                    font_size = 16
+                    )
+        gameLayer.add(userNameText,z=30,name='userNameText'+str(i))
+        gameLayer.add(scoreText,z=30,name='scoreText'+str(i))
+        i = i + 1
+
+    buttonLeftArrow = leftArrowMenu()
+    gameLayer.add(buttonLeftArrow,z=30,name='buttonLeftArrow')
+    global buttonRightExist
+    buttonRightExist = False
+
+def deleteRank():
+    if(buttonRightExist):
+        gameLayer.remove('buttonRightArrow')
+    else:
+        gameLayer.remove('buttonLeftArrow')
+    gameLayer.remove('listTitle')
+    gameLayer.remove('listType')
+    for i in range(0,10):
+        gameLayer.remove('userNameText'+str(i))
+        gameLayer.remove('scoreText'+str(i))
+
+# 排名的右箭头 modified by Joe at 2017.12.18
+class rightArrowMenu(Menu):
+    """docstring for rightArrowMenu"""
+    def __init__(self):
+        super(rightArrowMenu, self).__init__()
+        self.font_item = {
+            'font_name': 'Arial',
+            'font_size': 32,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'right',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+        self.font_item_selected = {
+            'font_name': 'Arial',
+            'font_size': 32,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'right',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+
+        self.menu_valign = CENTER  
+        self.menu_halign = RIGHT
+        items = [
+                (ImageMenuItem(common.load_image("button_right.png"), self.goRight)),
+                ]
+        self.create_menu(items)
+
+    def goRight(self):
+        deleteRank()
+        drawRankOnline()
+
+# 排名的左箭头  modified by Joe at 2017.12.18
+class leftArrowMenu(Menu):
+    """docstring for rightArrowMenu"""
+    def __init__(self):
+        super(leftArrowMenu, self).__init__()
+        self.font_item = {
+            'font_name': 'Arial',
+            'font_size': 32,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'right',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+        self.font_item_selected = {
+            'font_name': 'Arial',
+            'font_size': 32,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'right',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+
+        self.menu_valign = CENTER  
+        self.menu_halign = LEFT
+        items = [
+                (ImageMenuItem(common.load_image("button_left.png"), self.goLeft)),
+                ]
+        self.create_menu(items)
+
+    def goLeft(self):
+        deleteRank()
+        drawRankLocal()
+
+# 排名底下的ok按键
+class rankOkMenu(Menu):
+    """docstring for rankOkMenu"""
+    def __init__(self):
+        super(rankOkMenu, self).__init__()
+        self.font_item = {
+            'font_name': 'Arial',
+            'font_size': 18,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+        self.font_item_selected = {
+            'font_name': 'Arial',
+            'font_size': 22,
+            'bold': False,
+            'italic': False,
+            'anchor_y': 'center',
+            'anchor_x': 'center',
+            'color': (255, 255, 255, 255),
+            'dpi': 96,
+        }
+
+        self.menu_valign = CENTER  
+        self.menu_halign = CENTER
+        items = [
+                (ImageMenuItem(common.load_image("button_ok.png"), self.goRestart))
+                ]
+        self.create_menu(items,layout_strategy = fixedPositionMenuLayout([(114,140)]))
+    
+    def goRestart(self):
+        deleteRank()
+        gameLayer.remove('buttonRankOk')
+        backToMainMenu()    
+
+# 为了话排名的时候不出bug modified by Joe at 2017.12.18
+def appendScore():
+    global scoreListLocal,scoreListOnline
+    score = getGameScore()
+    scoreListLocal.append((userName,score))
+    scoreListOnline.append((userName,score))

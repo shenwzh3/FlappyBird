@@ -131,6 +131,7 @@ def gameOver(gameScene, land_1, land_2, spriteBird, upPipeCollided):
         # 向服务器发送请求成绩数据
         # sendScoreRequesttoServer()
         # ######
+        game_controller.appendScore()
         game_controller.backToMainMenu()    
    
 
