@@ -31,7 +31,7 @@ def checkSignInAuthentication(signInInformation):
     data = json.load(json_file)
     userInfoList = data['userInfo']
     json_file.close()
-    print userInfoList
+    # print userInfoList
     # signInInformation = {'userName':userName,'password':password]}
     for i in range(len(userInfoList)):
         if signInInformation['userName'] == userInfoList[i]['userName'] and signInInformation['password'] == userInfoList[i]['password']:
@@ -43,7 +43,7 @@ def checkSignUpAuthentication(signUpInformation):
     data = json.load(json_file)
     userInfoList = data['userInfo']
     json_file.close()
-    print userInfoList
+    # print userInfoList
     # signUpInformation = {'userName':userName,'password':password]}
     for i in range(len(userInfoList)):
         if signUpInformation['userName'] == userInfoList[i]['userName']:
@@ -138,7 +138,7 @@ while inputs:
                     if 'signInAuthentication' in recvData:
                         number = recvData['sid']
                         signInInformation = recvData['signInAuthentication']
-                        print 'signin authentication:',signInInformation
+                        # print 'signin authentication:',signInInformation
                         if checkSignInAuthentication(signInInformation):
                             sendData = {'authenResult':True}
                         else:
@@ -148,7 +148,7 @@ while inputs:
                     if 'signUpAuthentication' in recvData:
                         number = recvData['sid']
                         signUpInformation = recvData['signUpAuthentication']
-                        print 'signup authentication:',signUpInformation
+                        # print 'signup authentication:',signUpInformation
                         if checkSignUpAuthentication(signUpInformation):
                             sendData = {'signUpSucceed':True}
                         else:
@@ -158,7 +158,7 @@ while inputs:
                     if 'scoreInformation' in recvData:
                         number = recvData['sid']
                         scoreInformation = recvData['scoreInformation']
-                        print 'score:',scoreInformation
+                        # print 'score:',scoreInformation
                         storeScoreInServer(scoreInformation)
 
                     if 'scoreRequest' in recvData:
