@@ -1,6 +1,10 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 import socket, json, base64
+from myAES import *
+
+crypt = AEScrypt('abcdefghijklnopq')#AES with pre-set key
+
 
 # constants
 TIMEOUT = -1
@@ -62,7 +66,7 @@ def read(sock):
         return CLOSED
     
     #解析数据
-    return unpack(data)
+    return unpack(data) 
 
 # 功能：对输入的dict使用json转换 使用base64加密 加上长度信息
 # 输入：dict
@@ -71,7 +75,9 @@ def pack(dic):
     # 转换成json
     jsonData = json.dumps(dic)
     # base64加密
-    jsonData = base64.b64encode(jsonData)
+    # jsonData = base64.b64encode(jsonData)
+    #AES encrypt
+    jsonData = crypt.encrypt(jsonData) 
     # 加上头部信息
     length = len(jsonData)
     string = None
@@ -89,8 +95,11 @@ def pack(dic):
 # 输入string
 # 输出dict
 def unpack(string):
-    # base64解密
-    jsonData = base64.b64decode(string)
+    #AES decrypt
+    jsonData = crypt.decrypt(string) 
+    # # base64解密
+    # jsonData = base64.b64decode(string)
     # json解析
+    print jsonData
     dic = json.loads(jsonData)
     return dic
